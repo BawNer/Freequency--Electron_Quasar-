@@ -182,7 +182,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
 import { useQuasar } from 'quasar'
 import { Chart, registerables } from 'chart.js';
 
@@ -208,25 +208,29 @@ export default {
     const dataDialog = ref(false)
     const maximizedToggle = ref(true)
 
-    const rbc = ref(1)
-    const g1 = ref(10)
-    const h1 = ref(30)
-    const h2 = ref(2)
-    const y = ref(15)
-    const dh = ref(120)
-    const f = ref(900)
-    const nL = ref(10)
-    const rbcDB = ref(30)
+    const chart = ref(null)
 
-    const _rbc = ref(1)
-    const _g1 = ref(10)
-    const _h1 = ref(30)
-    const _h2 = ref(2)
-    const _y = ref(15)
-    const _dh = ref(120)
-    const _f = ref(900)
-    const _nL = ref(10)
-    const _rbcDB = ref(30)
+    const rbc = ref(null)
+    const g1 = ref(null)
+    const h1 = ref(null)
+    const h2 = ref(null)
+    const y = ref(null)
+    const dh = ref(null)
+    const f = ref(null)
+    const nL = ref(null)
+    const rbcDB = ref(null)
+
+    const _rbc = ref(null)
+    const _g1 = ref(null)
+    const _h1 = ref(null)
+    const _h2 = ref(null)
+    const _y = ref(null)
+    const _dh = ref(null)
+    const _f = ref(null)
+    const _nL = ref(null)
+    const _rbcDB = ref(null)
+
+    const firebase = inject('firebase')
 
     const rowsDefaultData = computed(() => [
       { per: 'Рбс', val: rbc.value, ed: 'Вт' },
@@ -293,6 +297,24 @@ export default {
       }
     ])
 
+
+    const saveProperty = () => {
+      rbc.value = _rbc.value
+      g1.value = _g1.value
+      h1.value = _h1.value
+      h2.value = _h2.value
+      y.value = _y.value
+      dh.value = _dh.value
+      f.value = _f.value
+      nL.value = _nL.value
+      rbcDB.value = _rbcDB.value
+      chart.value.data.datasets[0].data = rowsComputedData.value.map(a => a.pmval)
+      $q.notify({
+        message: 'Обновлено!',
+        type: 'positive'
+      })
+    }
+
     const $labels = [0, 5, 10, 15, 20, 25, 30, 35]
     const $data = () => {
       return {
@@ -313,31 +335,27 @@ export default {
       data: $data()
     }
 
-    let chart = null
-
     onMounted(() => {
       const $ctx = document.getElementById('chart')
-      chart = new Chart($ctx, $conf)
-    })
-
-
-    const saveProperty = () => {
-      rbc.value = _rbc.value
-      g1.value = _g1.value
-      h1.value = _h1.value
-      h2.value = _h2.value
-      y.value = _y.value
-      dh.value = _dh.value
-      f.value = _f.value
-      nL.value = _nL.value
-      rbcDB.value = _rbcDB.value
-      $q.notify({
-        message: 'Обновлено!',
-        type: 'positive'
+      chart.value = new Chart($ctx, $conf)
+      firebase('modelHata').then(snapshot => {
+        dh.value = _dh.value = snapshot.dh
+        f.value = _f.value = snapshot.f
+        g1.value = _g1.value = snapshot.g1
+        h1.value = _h1.value = snapshot.h1
+        h2.value = _h2.value = snapshot.h2
+        nL.value = _nL.value = snapshot.nL
+        rbc.value = _rbc.value = snapshot.rbc
+        rbcDB.value = _rbcDB.value = snapshot.rbcDB
+        y.value = _y.value = snapshot.y
+        saveProperty()
+      }).catch(error => {
+        $q.notify({
+          message: error.message,
+          type: 'negative'
+        })
       })
-
-      chart.data.datasets[0].data = rowsComputedData.value.map(a => a.pmval)
-    }
+    })
 
     return {
       rowsDefaultData,

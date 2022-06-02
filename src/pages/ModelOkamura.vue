@@ -198,7 +198,7 @@
 </template>
 
 <script>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, inject} from 'vue'
 import { useQuasar } from 'quasar'
 import { Chart, registerables } from 'chart.js';
 
@@ -224,31 +224,33 @@ export default ({
     const $q = useQuasar()
     Chart.register(...registerables)
 
+    const firebase = inject('firebase')
+
     const dataDialog = ref(false)
     const maximizedToggle = ref(true)
 
-    const rbc = ref(1)
-    const g1 = ref(10)
-    const h1 = ref(50)
-    const h2 = ref(2)
-    const y = ref(15)
-    const dh = ref(120)
-    const f = ref(2400)
-    const nL = ref(10)
-    const rbcDB = ref(30)
-    const acf = ref(0.125)
-    const Pm = ref(10**(-8.5))
+    const rbc = ref(null)
+    const g1 = ref(null)
+    const h1 = ref(null)
+    const h2 = ref(null)
+    const y = ref(null)
+    const dh = ref(null)
+    const f = ref(null)
+    const nL = ref(null)
+    const rbcDB = ref(null)
+    const acf = ref(null)
+    const Pm = ref(null)
 
-    const _rbc = ref(1)
-    const _g1 = ref(10)
-    const _h1 = ref(50)
-    const _h2 = ref(2)
-    const _y = ref(15)
-    const _dh = ref(120)
-    const _f = ref(2400)
-    const _nL = ref(10)
-    const _rbcDB = ref(30)
-    const _acf = ref(0.125)
+    const _rbc = ref(null)
+    const _g1 = ref(null)
+    const _h1 = ref(null)
+    const _h2 = ref(null)
+    const _y = ref(null)
+    const _dh = ref(null)
+    const _f = ref(null)
+    const _nL = ref(null)
+    const _rbcDB = ref(null)
+    const _acf = ref(null)
 
 
     const rowsDefaultData = computed(() => [
@@ -266,59 +268,59 @@ export default ({
     ])
 
     const rowsComputedData = computed(() => [
-      { 
-        po: 1, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(1/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*1**(-4)), 
-        pm: 1, 
-        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(1/acf.value))-20+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3), 
-        h: 'H(hбс,R)<10', 
-        hv: 20*Math.log10(h1.value/200) 
+      {
+        po: 1,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(1/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*1**(-4)),
+        pm: 1,
+        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(1/acf.value))-20+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3),
+        h: 'H(hбс,R)<10',
+        hv: 20*Math.log10(h1.value/200)
       },
-      { 
-        po: 2, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(5/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*5**(-4)), 
-        pm: 2, 
-        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(5/acf.value))-27+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3), 
-        h: 'H(hбс,R)>10', 
-        hv: 30*Math.log10(h1.value/200) 
+      {
+        po: 2,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(5/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*5**(-4)),
+        pm: 2,
+        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(5/acf.value))-27+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3),
+        h: 'H(hбс,R)>10',
+        hv: 30*Math.log10(h1.value/200)
       },
-      { 
-        po: 3, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(10/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*10**(-4)), 
-        pm: 3, 
-        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(10/acf.value))-30+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3), 
-        h: 'H(hмс,f)', 
-        hv: 10*Math.log10(h2.value/3) 
+      {
+        po: 3,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(10/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*10**(-4)),
+        pm: 3,
+        pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(10/acf.value))-30+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3),
+        h: 'H(hмс,f)',
+        hv: 10*Math.log10(h2.value/3)
       },
-      { 
-        po: 4, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(15/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*15**(-4)), 
-        pm: 4, 
+      {
+        po: 4,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(15/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*15**(-4)),
+        pm: 4,
         pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(15/acf.value))-33+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3)
       },
-      { 
-        po: 5, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(20/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*20**(-4)), 
-        pm: 5, 
+      {
+        po: 5,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(20/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*20**(-4)),
+        pm: 5,
         pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(20/acf.value))-35+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3)
       },
-      { 
-        po: 5, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(25/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*25**(-4)), 
-        pm: 5, 
+      {
+        po: 5,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(25/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*25**(-4)),
+        pm: 5,
         pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(25/acf.value))-37+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3)
       },
-      { 
-        po: 6, 
-        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(30/acf.value)), 
-        pofalse: 10*Math.log10(Pm.value*30**(-4)), 
-        pm: 6, 
+      {
+        po: 6,
+        potrue: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(30/acf.value)),
+        pofalse: 10*Math.log10(Pm.value*30**(-4)),
+        pm: 6,
         pmv: 10*Math.log10(rbc.value)+g1.value-20*Math.log10(4*Math.PI*(30/acf.value))-40+20*Math.log10(h1.value/200)+10*Math.log10(h2.value/3)
       },
     ])
@@ -342,13 +344,32 @@ export default ({
       data: $data()
     }
 
-    let chart = null
+    const chart = ref(null)
 
     onMounted(() => {
       const $ctx = document.getElementById('chart')
-      chart = new Chart($ctx, $conf)
+      chart.value = new Chart($ctx, $conf)
+      firebase('modelOkamura').then(snapshot => {
+        dh.value = _dh.value = snapshot.dh
+        f.value = _f.value = snapshot.f
+        g1.value = _g1.value = snapshot.g1
+        h1.value = _h1.value = snapshot.h1
+        h2.value = _h2.value = snapshot.h2
+        nL.value = _nL.value = snapshot.nL
+        rbc.value = _rbc.value = snapshot.rbc
+        rbcDB.value = _rbcDB.value = snapshot.rbcDB
+        y.value = _y.value = snapshot.y
+        acf.value = _acf.value = snapshot.acf
+        Pm.value = snapshot.Pm
+        saveProperty()
+      }).catch(error => {
+        $q.notify({
+          message: error.message,
+          type: 'negative'
+        })
+      })
     })
-    
+
     const saveProperty = () => {
       rbc.value = _rbc.value
       g1.value = _g1.value
@@ -365,7 +386,7 @@ export default ({
         type: 'positive'
       })
 
-      chart.data.datasets[0].data = rowsComputedData.value.map(a => a.pmv)
+      chart.value.data.datasets[0].data = rowsComputedData.value.map(a => a.pmv)
     }
 
     return {

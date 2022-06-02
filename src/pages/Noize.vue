@@ -102,7 +102,8 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
+import { useQuasar } from "quasar";
 
 const columnsDefaultData = [
   { name: 'var', field: 'var', label: 'Переменная', align: 'left' },
@@ -120,13 +121,16 @@ export default {
   setup() {
     const dataDialog = ref(false)
     const maximizedToggle = ref(true)
+    const $q = useQuasar()
 
-    const r0 = ref(2)
-    const nf = ref(4)
-    const N = ref(3)
-    const _r0 = ref(2)
-    const _nf = ref(4)
-    const _N = ref(3)
+    const firebase = inject('firebase')
+
+    const r0 = ref(0)
+    const nf = ref(0)
+    const N = ref(0)
+    const _r0 = ref(0)
+    const _nf = ref(0)
+    const _N = ref(0)
     const d = computed(() => Math.sqrt(3*N.value) * r0.value)
     const qsqrt= computed(() => Math.sqrt(3*N.value))
     const q = computed(() => d.value / r0.value)
@@ -144,18 +148,18 @@ export default {
     const r2 = computed(() => Math.sqrt(q.value**2 - q.value+1) * r0.value)
     const r3 = computed(() => Math.sqrt(q.value**2 + q.value+1) * r0.value)
     const r4 = computed(() => (q.value + 1) * r0.value)
-    const r5 = r3.value
-    const r6 = r2.value
+    const r5 = computed(() => r3.value)
+    const r6 = computed(() => r2.value)
 
-    const sir = computed(() => 10*Math.log10((r0.value**(-nf.value))/((r1.value**(-nf.value))+(r2.value**(-nf.value))+(r3.value**(-nf.value))+(r4.value**(-nf.value))+(r5**(-nf.value))+(r6**(-nf.value)))))
+    const sir = computed(() => 10*Math.log10((r0.value**(-nf.value))/((r1.value**(-nf.value))+(r2.value**(-nf.value))+(r3.value**(-nf.value))+(r4.value**(-nf.value))+(r5.value**(-nf.value))+(r6.value**(-nf.value)))))
 
     const rowsComputedData = computed(() => [
       { var: 'R1', val: r1.value },
       { var: 'R2', val: r2.value },
       { var: 'R3', val: r3.value },
       { var: 'R4', val: r4.value },
-      { var: 'R5', val: r5 },
-      { var: 'R6', val: r6 },
+      { var: 'R5', val: r5.value },
+      { var: 'R6', val: r6.value },
       { var: 'SIR', val: sir.value, ext: 'дБ' }
     ])
 
@@ -168,7 +172,21 @@ export default {
         type: 'positive'
       })
     }
-    
+
+    onMounted(() => {
+      firebase('noize').then(snapshot => {
+        r0.value = _r0.value = snapshot.r0
+        nf.value = _nf.value = snapshot.nf
+        N.value = _N.value = snapshot.N
+        saveProperty()
+      }).catch(error => {
+        $q.notify({
+          message: error.message,
+          type: 'negative'
+        })
+      })
+    })
+
     return {
       columnsDefaultData,
       rowsDefaultData,
