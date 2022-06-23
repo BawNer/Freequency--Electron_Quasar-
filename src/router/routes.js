@@ -8,7 +8,7 @@ const routes = [
       { path: 'okamura', meta: { name: 'Модель Окамуры' }, component: () => import('src/pages/ModelOkamura.vue') },
       { path: 'li', meta: { name: 'Модель Ли' }, component: () => import('src/pages/ModelLi.vue') },
       { path: 'hata', meta: { name: 'Модель Хата' }, component: () => import('src/pages/ModelHata.vue') },
-      { path: 'noize', meta: { name: 'Межсотовые помехи' }, component: () => import('src/pages/Noize.vue') },
+      { path: 'noize', meta: { name: 'Соканальные помехи' }, component: () => import('src/pages/Noize.vue') },
     ]
   },
 

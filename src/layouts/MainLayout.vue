@@ -68,7 +68,7 @@ const linksList = [
     link: '/hata'
   },
   {
-    title: 'Межсотовые помехи',
+    title: 'Соканальные помехи',
     caption: 'Проведение расчетов',
     icon: 'mdi-antenna',
     link: '/noize'
