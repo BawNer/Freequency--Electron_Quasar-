@@ -192,7 +192,7 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-electron-apps/configuring-electron
     electron: {
-      bundler: 'packager', // 'packager' or 'builder'
+      bundler: 'builder', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -210,7 +210,11 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'diplom1'
+        appId: 'diplom1',
+        win: {
+          target: 'nsis'
+        },
+
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
